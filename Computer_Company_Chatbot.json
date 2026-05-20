@@ -1,0 +1,196 @@
+{
+  "name": "Computer_Company_Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5820b04e-50f1-4b52-95f5-3ae3fb7704e9",
+      "name": "When chat message received",
+      "webhookId": "ab7df11d-58a8-462f-8fc7-21e208ee155d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You represent a computer company. Please answer customer inquiries using the information provided in the Google Sheet. Please send an email to the owner only if the customer requests to purchase a device. Before sending the email, ask the customer for their name and phone number, and send them to the owner via Email. please arrange the email in a very well format."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "58137cbf-0449-48c6-b066-42fb843f4fe1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        192
+      ],
+      "id": "bc520609-e46e-491a-8456-d56367fac95f",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_6bXTgk5jGx3Uq-8EQCoPZDxHof588CozZnXD_2ZkXQ",
+          "mode": "list",
+          "cachedResultName": "Products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_6bXTgk5jGx3Uq-8EQCoPZDxHof588CozZnXD_2ZkXQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2068534037,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_6bXTgk5jGx3Uq-8EQCoPZDxHof588CozZnXD_2ZkXQ/edit#gid=2068534037"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        592,
+        240
+      ],
+      "id": "c1a2c5c2-01fa-474e-84db-982951bbf9a2",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9nDDCje6vtrRgb4E",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "waheedfaraag5@gmail.com",
+        "subject": "Customer Purchase Request",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        160
+      ],
+      "id": "9d328f53-1e10-4553-bd4b-140f84981cd2",
+      "name": "Send a message in Gmail",
+      "webhookId": "fc1f591b-8e78-462b-9a27-8eee49e16064",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UVY1pMQljeS1jDAp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        160
+      ],
+      "id": "74bd4dda-92ba-4ac2-82ec-aa5612b641ce",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bad29b1b-9d33-4b18-bd04-cb9b79e78a42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "921999507e40ea1e3f82d2e09db5789760aa697a7ece459104feb458b362969f"
+  },
+  "id": "dIZxEkZY7sKoFMhN",
+  "tags": []
+}
